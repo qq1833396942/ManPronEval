@@ -3,27 +3,27 @@ import torch.nn as nn
 from transformers import Wav2Vec2Model
 from torch.nn.utils.rnn import pad_sequence
 
-class APA_HuBERT_Large_Model(nn.Module):
-    def __init__(self, num_pinyins, embed_dim=128, hubert_version="facebook_wav2vec2_large_960"):
+class APA_Wav2Vec2_Large_Model(nn.Module):
+    def __init__(self, num_pinyins, embed_dim=128, wav2vec2_version="facebook_wav2vec2_large_960"):
         super().__init__()
         print(f"🧬 APA 考官模型 (Large 版 + 显式交互 + 冻结底座) 初始化中...")
 
-        self.hubert = Wav2Vec2Model.from_pretrained(hubert_version, output_hidden_states=True)
+        self.wav2vec2 = Wav2Vec2Model.from_pretrained(wav2vec2_version, output_hidden_states=True)
         # 关闭遮盖防止短音频报错
-        self.hubert.config.mask_time_prob = 0.0
-        self.hubert.config.mask_feature_prob = 0.0
+        self.wav2vec2.config.mask_time_prob = 0.0
+        self.wav2vec2.config.mask_feature_prob = 0.0
 
         # ====================================================
-        # 🔒 救命操作：冻结 HuBERT 参数，防止灾难性遗忘！
+        # 🔒 救命操作：冻结 wav2vec2 参数，防止灾难性遗忘！
         # ====================================================
-        for param in self.hubert.parameters():
+        for param in self.wav2vec2.parameters():
             param.requires_grad = False
-        print("🔒 HuBERT Large 底座参数已完全冻结！")
+        print("🔒 wav2vec2 Large 底座参数已完全冻结！")
 
         self.pinyin_embedding = nn.Embedding(num_embeddings=num_pinyins, embedding_dim=embed_dim)
         
         # 自动获取 Large 版的维度 (1024)
-        audio_dim = self.hubert.config.hidden_size 
+        audio_dim = self.wav2vec2.config.hidden_size 
         
         # ====================================================
         # 👑 核心魔法：交叉注意力组件 (Cross-Attention)
@@ -65,7 +65,7 @@ class APA_HuBERT_Large_Model(nn.Module):
         device = waveforms.device
         
         # 1. 提特征 (因为底座被冻结，这里只过前向传播，不计算底座梯度)
-        outputs = self.hubert(waveforms)
+        outputs = self.wav2vec2(waveforms)
         # outputs.hidden_states 是一个 tuple，包含 1层 embedding + 24 层 transformer 输出
         # 取第 16 层的特征，这层对发音瑕疵最敏感
         audio_features = outputs.hidden_states[16]  # [B, Seq_Len, 1024]

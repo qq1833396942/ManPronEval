@@ -9,13 +9,13 @@ from sklearn.metrics import mean_squared_error
 from tqdm import tqdm
 import pandas as pd
 
-from dataset_hubert_apa import build_pinyin_vocab, APA_HuBERT_Dataset, collate_fn_apa
-from model_hubert_apa_base_hire import APA_HuBERT_Base_Model
+from dataset_wav2vec2_apa import build_pinyin_vocab, APA_Wav2Vec2_Dataset, collate_fn_apa
+from model_wav2vec2_apa_base import APA_Wav2vec2_Base_Model
 
 # ==========================================
 # 1. 核心配置 
 # ==========================================
-LOCAL_HUBERT_PATH = r"facebook_wav2vec2_base_960"
+LOCAL_wav2vec2_PATH = r"facebook_wav2vec2_base_960"
 
 TRAIN_JSON = 'metadata_train_apa.json'
 VAL_JSON   = 'metadata_val_apa.json'
@@ -27,8 +27,8 @@ PARAMS = {
     "epochs": 20,
     "patience": 5,
     # ⚠️ 更改了保存路径，防止和旧版 384维度的 checkpoint 发生冲突！
-    "save_path": "best_hubert_base_v2_explicit.pth",
-    "checkpoint_name": "hubert_base_apa_v2_checkpoint.pth" 
+    "save_path": "best_wav2vec2_base_v2_explicit.pth",
+    "checkpoint_name": "wav2vec2_base_apa_v2_checkpoint.pth" 
 }
 
 def evaluate(model, loader, device, criterion, desc="Evaluating"):
@@ -91,13 +91,13 @@ def main():
     pinyin2id = build_pinyin_vocab([TRAIN_JSON, VAL_JSON, TEST_JSON])
     vocab_size = len(pinyin2id) + 1
 
-    train_loader = DataLoader(APA_HuBERT_Dataset(TRAIN_JSON, pinyin2id=pinyin2id), 
+    train_loader = DataLoader(APA_Wav2Vec2_Dataset(TRAIN_JSON, pinyin2id=pinyin2id),
                               batch_size=PARAMS["batch_size"], shuffle=True, collate_fn=collate_fn_apa)
-    val_loader   = DataLoader(APA_HuBERT_Dataset(VAL_JSON, pinyin2id=pinyin2id), 
+    val_loader   = DataLoader(APA_Wav2Vec2_Dataset(VAL_JSON, pinyin2id=pinyin2id),
                               batch_size=PARAMS["batch_size"], shuffle=False, collate_fn=collate_fn_apa)
 
     # 2. 模型初始化
-    model = APA_HuBERT_Base_Model(num_pinyins=vocab_size, hubert_version=LOCAL_HUBERT_PATH).to(device)
+    model = APA_Wav2vec2_Base_Model(num_pinyins=vocab_size, wav2vec2_version=LOCAL_wav2vec2_PATH).to(device)
     
     # 完美！这里只会抓取 requires_grad=True 的参数（即我们没冻结的 MLP 和 Attention）
     trainable_params = filter(lambda p: p.requires_grad, model.parameters())

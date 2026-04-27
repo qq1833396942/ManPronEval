@@ -4,12 +4,12 @@ from transformers import Wav2Vec2Model
 from torch.nn.utils.rnn import pad_sequence
 
 class APA_Wav2vec2_Base_Model(nn.Module):
-    def __init__(self, num_pinyins, embed_dim=128, hubert_version="facebook_wav2vec2_base_960"):
+    def __init__(self, num_pinyins, embed_dim=128, wav2vec2_version="facebook_wav2vec2_base_960"):
         super().__init__()
         print(f"🧬 APA 考官模型 (Base 版 + 显式交互 + 冻结底座 + Layer 8特征) 初始化中...")
 
         # 🚨 修改 1：必须开启 output_hidden_states=True 才能获取中间层
-        self.wav2vec2 = Wav2Vec2Model.from_pretrained(hubert_version, output_hidden_states=True)
+        self.wav2vec2 = Wav2Vec2Model.from_pretrained(wav2vec2_version, output_hidden_states=True)
         # 关闭遮盖防止短音频报错
         self.wav2vec2.config.mask_time_prob = 0.0
         self.wav2vec2.config.mask_feature_prob = 0.0
@@ -19,7 +19,7 @@ class APA_Wav2vec2_Base_Model(nn.Module):
         # ====================================================
         for param in self.wav2vec2.parameters():
             param.requires_grad = False
-        print("🔒 HuBERT 底座参数已完全冻结！")
+        print("🔒 wav2vec2 底座参数已完全冻结！")
 
         self.pinyin_embedding = nn.Embedding(num_embeddings=num_pinyins, embedding_dim=embed_dim)
         

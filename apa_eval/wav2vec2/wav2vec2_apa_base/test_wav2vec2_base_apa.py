@@ -10,15 +10,15 @@ from tqdm import tqdm
 import pandas as pd
 
 # 导入你的 Base 模型和数据处理类
-from dataset_hubert_apa import build_pinyin_vocab, APA_HuBERT_Dataset, collate_fn_apa
-from model_hubert_apa_base_hire import APA_HuBERT_Base_Model
+from dataset_wav2vec2_apa import build_pinyin_vocab, APA_Wav2Vec2_Dataset, collate_fn_apa
+from model_wav2vec2_apa_base import APA_Wav2vec2_Base_Model
 
 # ==========================================
 # 1. 核心配置
 # ==========================================
-LOCAL_HUBERT_PATH = r"facebook_wav2vec2_base_960"
+LOCAL_wav2vec2_PATH = r"facebook_wav2vec2_base_960"
 TEST_JSON = 'metadata_test_apa.json' 
-MODEL_WEIGHTS = "best_hubert_base_v2_explicit.pth" # 确保这是你刚刚练出来的包含三头打分的最新权重
+MODEL_WEIGHTS = "best_wav2vec2_base_v2_explicit.pth" # 确保这是你刚刚练出来的包含三头打分的最新权重
 
 BATCH_SIZE = 16
 
@@ -46,12 +46,12 @@ def main():
     pinyin2id = build_pinyin_vocab(['metadata_train_apa.json', 'metadata_val_apa.json', TEST_JSON])
     vocab_size = len(pinyin2id) + 1
 
-    test_dataset = APA_HuBERT_Dataset(TEST_JSON, pinyin2id=pinyin2id)
+    test_dataset = APA_Wav2Vec2_Dataset(TEST_JSON, pinyin2id=pinyin2id)
     test_loader = DataLoader(test_dataset, batch_size=BATCH_SIZE, shuffle=False, collate_fn=collate_fn_apa)
     print(f"✅ 测试集加载完毕，共 {len(test_dataset)} 条数据。")
 
     # 3. 初始化模型并加载权重
-    model = APA_HuBERT_Base_Model(num_pinyins=vocab_size, hubert_version=LOCAL_HUBERT_PATH)
+    model = APA_Wav2vec2_Base_Model(num_pinyins=vocab_size, wav2vec2_version=LOCAL_wav2vec2_PATH)
     
     if not os.path.exists(MODEL_WEIGHTS):
         print(f"❌ 找不到权重文件 {MODEL_WEIGHTS}！")

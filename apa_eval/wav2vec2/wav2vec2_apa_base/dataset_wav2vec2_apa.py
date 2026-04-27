@@ -20,7 +20,7 @@ def build_pinyin_vocab(json_paths):
         pinyin2id[p] = i + 2
     return pinyin2id
 
-class APA_HuBERT_Dataset(Dataset):
+class APA_Wav2Vec2_Dataset(Dataset):
     def __init__(self, json_path, pinyin2id, target_sr=16000):
         super().__init__()
         with open(json_path, 'r', encoding='utf-8') as f:
