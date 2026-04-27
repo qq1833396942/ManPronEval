@@ -10,7 +10,7 @@ from jiwer import cer, wer  # 💡 引入 jiwer 计算 ASR 高阶指标
 
 # 导入你的数据类和 Large 模型类
 from dataset_mtl import MTLDataset, mtl_collate_fn
-from model_mtl_large import MultiTaskHubertLarge
+from model_mtl_base import MultiTaskWav2vec2
 
 def test_best_model_large():
     # ==========================================
@@ -43,7 +43,7 @@ def test_best_model_large():
     # ==========================================
     # 🚀 3. 初始化模型并加载最佳权重
     # ==========================================
-    model = MultiTaskHubertLarge(model_path=LOCAL_MODEL_PATH, vocab_size=vocab_size).to(device)
+    model = MultiTaskWav2vec2(model_path=LOCAL_MODEL_PATH, vocab_size=vocab_size).to(device)
     
     if not os.path.exists(BEST_WEIGHTS):
         raise FileNotFoundError(f"找不到权重文件: {BEST_WEIGHTS}，请确认路径！")

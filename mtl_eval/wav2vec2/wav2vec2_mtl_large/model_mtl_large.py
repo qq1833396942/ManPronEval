@@ -18,24 +18,24 @@ class AttentionPooler(nn.Module):
         pooled_output = torch.sum(hidden_states * attn_weights, dim=1)
         return pooled_output
 
-class MultiTaskHubertLarge(nn.Module):
+class MultiTaskWav2vec2Large(nn.Module):
     def __init__(self, model_path, vocab_size):
         super().__init__()
-        print(f"🚀 初始化 [2/3 冻结 + LoRA 微调] Hubert-Large MTL 模型...")
-        self.hubert = Wav2Vec2Model.from_pretrained(model_path)
-        hidden_size = self.hubert.config.hidden_size # Large 为 1024
+        print(f"🚀 初始化 [2/3 冻结 + LoRA 微调] wav2vec2-Large MTL 模型...")
+        self.wav2vec2 = Wav2Vec2Model.from_pretrained(model_path)
+        hidden_size = self.wav2vec2.config.hidden_size # Large 为 1024
 
         # --- 策略修改：冻结前 16 层 (2/3) ---
-        # Hubert-Large 一共有 24 层 EncoderLayers
-        for i, layer in enumerate(self.hubert.encoder.layers):
+        # wav2vec2-Large 一共有 24 层 EncoderLayers
+        for i, layer in enumerate(self.wav2vec2.encoder.layers):
             if i < 16:
                 for param in layer.parameters():
                     param.requires_grad = False
         print(f"✅ 已冻结前 16 层编码器，仅允许后 8 层及 LoRA 更新")
 
         # --- LoRA 配置 ---
-        self.hubert.config.mask_time_prob = 0.0
-        self.hubert.config.mask_feature_prob = 0.0
+        self.wav2vec2.config.mask_time_prob = 0.0
+        self.wav2vec2.config.mask_feature_prob = 0.0
         
         lora_config = LoraConfig(
             r=16, 
@@ -44,7 +44,7 @@ class MultiTaskHubertLarge(nn.Module):
             lora_dropout=0.1, 
             bias="none"
         )
-        self.hubert = get_peft_model(self.hubert, lora_config)
+        self.wav2vec2 = get_peft_model(self.wav2vec2, lora_config)
 
         self.text_embedding = nn.Embedding(vocab_size, hidden_size)
 
@@ -77,7 +77,7 @@ class MultiTaskHubertLarge(nn.Module):
         )
 
     def forward(self, input_values, target_pinyin_ids):
-        outputs = self.hubert(input_values, output_hidden_states=True)
+        outputs = self.wav2vec2(input_values, output_hidden_states=True)
         hidden_states = outputs.hidden_states
         
         # 提取第 16 层（冻结特征）和 第 24 层（微调特征）

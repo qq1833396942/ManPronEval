@@ -10,7 +10,7 @@ from sklearn.metrics import accuracy_score, f1_score
 from jiwer import cer  # 💡 导入 CER 计算工具
 
 from dataset_mtl import MTLDataset, mtl_collate_fn
-from model_mtl_large import MultiTaskHubertLarge
+from model_mtl_large import MultiTaskWav2vec2Large
 
 def train_and_validate_mtl_large():
     # ==========================================
@@ -46,7 +46,7 @@ def train_and_validate_mtl_large():
     # ==========================================
     # 🚀 3. 模型与优化器
     # ==========================================
-    model = MultiTaskHubertLarge(model_path=LOCAL_MODEL_PATH, vocab_size=vocab_size).to(device)
+    model = MultiTaskWav2vec2Large(model_path=LOCAL_MODEL_PATH, vocab_size=vocab_size).to(device)
 
     optimizer = optim.AdamW(model.parameters(), lr=1e-4)
     scaler = torch.cuda.amp.GradScaler() 

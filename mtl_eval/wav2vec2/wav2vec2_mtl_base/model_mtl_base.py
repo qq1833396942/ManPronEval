@@ -24,7 +24,7 @@ class AttentionPooler(nn.Module):
         return pooled_output
 
 
-class MultiTaskHubert(nn.Module):
+class MultiTaskWav2vec2(nn.Module):
     def __init__(self, model_path, vocab_size):
         super().__init__()
         print("🚀 初始化 Wav2Vec2 MTL 模型 (APA 融合 L4+L8 特征)...")

@@ -9,7 +9,7 @@ from scipy.stats import pearsonr
 from sklearn.metrics import accuracy_score, f1_score
 
 from dataset_mtl import MTLDataset, mtl_collate_fn
-from model_mtl_base import MultiTaskHubert
+from model_mtl_base import MultiTaskWav2vec2
 
 def train_and_validate_mtl():
     # ==========================================
@@ -43,7 +43,7 @@ def train_and_validate_mtl():
     # ==========================================
     # 🚀 3. 模型与优化器 (严格对齐 1e-4)
     # ==========================================
-    model = MultiTaskHubert(model_path=LOCAL_MODEL_PATH, vocab_size=vocab_size).to(device)
+    model = MultiTaskWav2vec2(model_path=LOCAL_MODEL_PATH, vocab_size=vocab_size).to(device)
 
     # 剔除了所有复杂的分组，统一使用你基线实验的 1e-4 学习率
     optimizer = optim.AdamW(model.parameters(), lr=1e-4)
@@ -82,7 +82,7 @@ def train_and_validate_mtl():
             loss = (w_apa * loss_apa) + (w_mdd * loss_mdd) + (w_asr * loss_asr)
             loss.backward()
             
-            # 单一学习率 1e-4 对微调 HuBERT 来说冲击可能较大，加一点基础梯度截断防崩
+            # 单一学习率 1e-4 对微调 wav2vec2 来说冲击可能较大，加一点基础梯度截断防崩
             torch.nn.utils.clip_grad_norm_(model.parameters(), max_norm=1.0)
             optimizer.step()
 
