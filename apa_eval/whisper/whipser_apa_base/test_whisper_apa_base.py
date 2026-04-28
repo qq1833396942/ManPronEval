@@ -8,7 +8,7 @@ from sklearn.metrics import mean_squared_error, mean_absolute_error
 from tqdm import tqdm
 
 # 复用 Dataset 逻辑
-from dataset_hubert_apa import build_pinyin_vocab, APA_HuBERT_Dataset, collate_fn_apa
+from dataset_whisper_apa import build_pinyin_vocab, APA_Whisper_Dataset, collate_fn_whisper_apa
 
 # 🚨 导入 Whisper-Base 考官模型
 from model_whisper_apa_base import APA_Whisper_Base_Model
@@ -17,7 +17,7 @@ from model_whisper_apa_base import APA_Whisper_Base_Model
 # 1. 路径与配置
 # ==========================================
 # 🚀 替换为你本地 Whisper-Base 的路径
-LOCAL_WHISPER_PATH = r"C:\Users\14183\OneDrive\Desktop\MDD-whisper\whisper-base-local"
+LOCAL_WHISPER_PATH = r""
 
 TRAIN_JSON = 'metadata_train_apa.json'
 VAL_JSON = 'metadata_val_apa.json'
@@ -38,8 +38,8 @@ def run_test():
 
     # 2. 加载 Test 数据集
     print("📦 正在加载测试集...")
-    test_dataset = APA_HuBERT_Dataset(TEST_JSON, pinyin2id=pinyin2id)
-    test_loader = DataLoader(test_dataset, batch_size=BATCH_SIZE, shuffle=False, collate_fn=collate_fn_apa)
+    test_dataset = APA_Whisper_Dataset(TEST_JSON, pinyin2id=pinyin2id)
+    test_loader = DataLoader(test_dataset, batch_size=BATCH_SIZE, shuffle=False, collate_fn=collate_fn_whisper_apa)
 
     # 3. 初始化模型并加载权重
     model = APA_Whisper_Base_Model(num_pinyins=vocab_size, whisper_version=LOCAL_WHISPER_PATH).to(device)

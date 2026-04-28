@@ -11,7 +11,7 @@ import pandas as pd
 
 # 💡 复用 HuBERT 的数据集读取逻辑：
 # 因为 Whisper 模型内部 (forward) 已经集成了波形转 Mel 频谱的操作
-from dataset_hubert_apa import build_pinyin_vocab, APA_HuBERT_Dataset, collate_fn_apa
+from dataset_whisper_apa import build_pinyin_vocab, APA_Whisper_Dataset,collate_fn_whisper_apa
 
 # 🚨 导入刚刚写好的 Whisper-Large 考官模型
 from model_whisper_apa_large import APA_Whisper_Large_Model
@@ -20,7 +20,7 @@ from model_whisper_apa_large import APA_Whisper_Large_Model
 # 1. 核心配置 (严格对齐)
 # ==========================================
 # 🚀 你的本地 Whisper-Large 路径
-LOCAL_WHISPER_PATH = r"C:\Users\14183\OneDrive\Desktop\MDD-whisper\whisper-large-local"
+LOCAL_WHISPER_PATH = r""
 
 TRAIN_JSON = 'metadata_train_apa.json'
 VAL_JSON = 'metadata_val_apa.json'
@@ -98,10 +98,10 @@ def main():
     pinyin2id = build_pinyin_vocab([TRAIN_JSON, VAL_JSON, TEST_JSON])
     vocab_size = len(pinyin2id) + 1
 
-    train_loader = DataLoader(APA_HuBERT_Dataset(TRAIN_JSON, pinyin2id=pinyin2id),
-                              batch_size=PARAMS["batch_size"], shuffle=True, collate_fn=collate_fn_apa)
-    val_loader = DataLoader(APA_HuBERT_Dataset(VAL_JSON, pinyin2id=pinyin2id),
-                            batch_size=PARAMS["batch_size"], shuffle=False, collate_fn=collate_fn_apa)
+    train_loader = DataLoader(APA_Whisper_Dataset(TRAIN_JSON, pinyin2id=pinyin2id),
+                              batch_size=PARAMS["batch_size"], shuffle=True, collate_fn=collate_fn_whisper_apa)
+    val_loader = DataLoader(APA_Whisper_Dataset(VAL_JSON, pinyin2id=pinyin2id),
+                            batch_size=PARAMS["batch_size"], shuffle=False, collate_fn=collate_fn_whisper_apa)
 
     # 2. 模型初始化 (调用 Whisper-Large 版)
     model = APA_Whisper_Large_Model(num_pinyins=vocab_size, whisper_version=LOCAL_WHISPER_PATH).to(device)

@@ -6,7 +6,7 @@ from torch.nn.utils.rnn import pad_sequence
 
 class APA_Whisper_Large_Model(nn.Module):
     def __init__(self, num_pinyins, embed_dim=128,
-                 whisper_version=r"C:\Users\14183\OneDrive\Desktop\MDD-whisper\whisper-large-local"):
+                 whisper_version=r"openai/whisper-base"):
         super().__init__()
         print(f"🧬 APA 考官模型 (Whisper-Large 版 + 显式交互 + 冻结底座) 初始化中...")
 

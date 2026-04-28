@@ -6,7 +6,7 @@ from pypinyin import pinyin, Style
 # ==========================================
 # 配置区 (已更新为你的实际路径)
 # ==========================================
-ROOT_DIR = r'C:\Users\14183\OneDrive\Desktop\belle\solo_data'  # 根目录下包含 train/test/val
+ROOT_DIR = r''  # 根目录下包含 train/test/val
 SPLITS = ['train', 'test', 'val']
 
 def load_tg_safe(path):
