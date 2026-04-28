@@ -1,0 +1,54 @@
+{
+  "train_dir": "",
+  "val_dir": "",
+  "test_dir": "./data/test",
+  "vocab_path": "./syllable_vocab.json",
+  "base_model": "microsoft/wavlm-large",
+  "output_root": "./outputs_wavlm_large_pinyin",
+  "eval_ckpt_dir": "",
+
+  "seed": 42,
+  "epochs": 20,
+  "batch_size": 2,
+  "eval_batch_size": 4,
+  "num_workers": 0,
+  "device": "cuda",
+  "fp16": true,
+
+  "use_lora": true,
+  "lora_r": 8,
+  "lora_alpha": 16,
+  "lora_dropout": 0.05,
+  "lora_bias": "none",
+  "lora_target_preference": ["q_proj", "v_proj"],
+
+  "classifier_hidden": 1024,
+  "classifier_dropout": 0.1,
+  "pooling_mode": "masked_mean",
+
+  "encoder_lr": 0.00005,
+  "classifier_lr": 0.001,
+  "weight_decay": 0.01,
+  "grad_clip": 1.0,
+
+  "sample_rate": 16000,
+  "trim_top_db": null,
+  "min_after_trim_samples": 160,
+  "min_input_samples": 1600,
+  "normalize_wave": false,
+
+  "label_source_mode": "tier_index",
+  "label_tier_index": 2,
+  "tier_name": "syllables",
+  "tier_name_candidates": ["syllables", "Syllables", "syllable", "SYLLABLES"],
+  "label_read_mode": "first_valid",
+  "ignore_labels": ["sil", "sp", "spn", "pau", "noise", "<sil>", "<sp>", "<spn>"],
+  "strip_internal_spaces": false,
+
+  "probe_every_steps": 50,
+  "probe_num_val_samples": 32,
+  "print_top_label_count": 20,
+  "balanced_sampling": false,
+  "save_last": true,
+  "test_progress_every_batches": 20
+}

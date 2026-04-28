@@ -1,0 +1,9 @@
+{
+    "batch_size": 16,
+    "lr": 5e-05,
+    "epochs": 10,
+    "patience": 3,
+    "checkpoint_name": "checkpoint_v2.pth",
+    "vocab_size": 233,
+    "model_type": "Attention_Refined"
+}
